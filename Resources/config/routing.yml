@@ -1,0 +1,3 @@
+lks_man_power_homepage:
+    pattern:  /hello/{name}
+    defaults: { _controller: LksManPowerBundle:Default:index }
