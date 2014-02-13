@@ -78,7 +78,35 @@ class ProjectController extends Controller
 
     	if($form->isValid())
     	{
-    		$em = $this->getDoctrine()->getManager();
+            //define the beginDate and the endDate
+            //check the availibilty date of the member and define it as begin date
+            $member = $project->getMember();
+            if($member->getProjects() == null)
+            {
+                $project->setBeginDate(date_format(new \DateTime("now"), "Y-m-d H:i:s"));
+
+            } else {
+                $projectBeginDate = new \DateTime("now");
+                foreach($member->getProjects() as $project)
+                {
+                    //TODO
+                    if($project->getEndDate() != null)
+                    {
+                        $projectBeginDate = new $project->getEndDate();
+                    }
+                    
+                } 
+                $projectBeginDate->add(new \DateInterval('P1D'));
+                $project->setBeginDate($projectBeginDate);
+            }
+            
+            //add the estimation days to the endDate
+            $projectEndDate = $project->getBeginDate();
+            $projectEndDate->add(new \DateInterval('P'.$project->getEstimation().'D'));
+            $project->setEndDate(date_format($projectEndDate, "Y-m-d H:i:s"));
+
+    		
+            $em = $this->getDoctrine()->getManager();
 		    $em->persist($project);
 		    $em->flush();
 

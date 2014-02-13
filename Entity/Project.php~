@@ -32,12 +32,12 @@ class Project
     /**
      * @ORM\Column(type="datetime")
      */
-    protected $beginDate;
+    protected $begin_date;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    protected $endDate;
+    protected $end_date;
 
 	/**
      * @ORM\ManyToOne(targetEntity="Lks\ManPowerBundle\Entity\Member", inversedBy="projects")
@@ -135,7 +135,7 @@ class Project
      */
     public function setBeginDate($beginDate)
     {
-        $this->beginDate = $beginDate;
+        $this->begin_date = $beginDate;
     
         return $this;
     }
@@ -147,29 +147,29 @@ class Project
      */
     public function getBeginDate()
     {
-        return $this->beginDate;
+        return $this->begin_date;
     }
 
     /**
-     * Set endDate
+     * Set end_date
      *
      * @param \DateTime $endDate
      * @return Project
      */
     public function setEndDate($endDate)
     {
-        $this->endDate = $endDate;
+        $this->end_date = $endDate;
     
         return $this;
     }
 
     /**
-     * Get endDate
+     * Get end_date
      *
      * @return \DateTime 
      */
     public function getEndDate()
     {
-        return $this->endDate;
+        return $this->end_date;
     }
 }
