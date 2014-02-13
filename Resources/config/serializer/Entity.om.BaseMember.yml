@@ -1,0 +1,9 @@
+Lks\ManPowerBundle\Entity\om\BaseMember:
+    exclusion_policy: ALL
+    properties:
+        id:
+            expose: true
+        firstname:
+            expose: true
+        lastname:
+            expose: true

@@ -1,3 +1,21 @@
-lks_man_power_homepage:
-    pattern:  /hello/{name}
-    defaults: { _controller: LksManPowerBundle:Default:index }
+#Member routing
+lks_man_power_member_all:
+    pattern:  /members
+    defaults: { _controller: LksManPowerBundle:Member:all }
+lks_man_power_member_create:
+    pattern:  /members/create
+    defaults: { _controller: LksManPowerBundle:Member:create }
+lks_man_power_member_edit:
+    pattern:  /members/edit/{id}
+    defaults: { _controller: LksManPowerBundle:Member:edit }
+
+#Project routing
+lks_man_power_project_all:
+    pattern:  /projects
+    defaults: { _controller: LksManPowerBundle:Project:all }
+lks_man_power_project_create:
+    pattern:  /projects/create
+    defaults: { _controller: LksManPowerBundle:Project:create }
+lks_man_power_project_edit:
+    pattern:  /projects/edit/{id}
+    defaults: { _controller: LksManPowerBundle:Project:edit }

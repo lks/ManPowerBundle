@@ -1,0 +1,6 @@
+<h1>Projects</h1>
+<ul>
+{% for project in projects %}
+	<li>{{ project.name|e }} <a href="projects/edit/{{ project.id|number_format }}">Edit</a></li>
+{% endfor %}
+</ul>
