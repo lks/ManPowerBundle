@@ -28,6 +28,7 @@ class ProjectController extends Controller
 
     	$form = $this->createFormBuilder($project)
     		->add('name', 'text')
+    		->add('estimation', 'text')
     		->add('member', 'entity', array(
                      'class' => 'LksManPowerBundle:Member',
                      'property' => 'firstname',))
@@ -65,6 +66,7 @@ class ProjectController extends Controller
 
         $form = $this->createFormBuilder($project)
     		->add('name', 'text')
+    		->add('estimation', 'text')
     		->add('member', 'entity', array(
                      'class' => 'LksManPowerBundle:Member',
                      'property' => 'firstname',))
