@@ -1,6 +1,13 @@
 <h1>Members</h1>
 <ul>
 {% for member in members %}
-	<li>{{ member.firstname|e }} <a href="members/edit/{{ member.id|number_format }}">Edit</a></li>
+	<li>
+		{{ member.firstname|e }} <a href="members/edit/{{ member.id|number_format }}">Edit</a>
+		<ul>
+			{% for project in member.projects %}
+				<li><a href="projects/edit/{{ project.id|number_format }}">{{ project.name|e }}</a></li>
+			{% endfor %}
+		</ul>
+	</li>
 {% endfor %}
 </ul>
