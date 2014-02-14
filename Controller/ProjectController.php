@@ -5,8 +5,8 @@ namespace Lks\ManPowerBundle\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Lks\CapacityBundle\Entity\Member;
-use Lks\CapacityBundle\Entity\Project;
+use Lks\ManPowerBundle\Entity\Member;
+use Lks\ManPowerBundle\Entity\Project;
 
 class ProjectController extends Controller
 {
@@ -41,7 +41,7 @@ class ProjectController extends Controller
     	if($form->isValid())
     	{
     		$em = $this->getDoctrine()->getManager();
-		    $em->persist($member);
+		    $em->persist($project);
 		    $em->flush();
 
 		    //TODO : Define a route
@@ -79,31 +79,13 @@ class ProjectController extends Controller
     	if($form->isValid())
     	{
             //define the beginDate and the endDate
-            //check the availibilty date of the member and define it as begin date
-            $member = $project->getMember();
-            if($member->getProjects() == null)
-            {
-                $project->setBeginDate(date_format(new \DateTime("now"), "Y-m-d H:i:s"));
-
-            } else {
-                $projectBeginDate = new \DateTime("now");
-                foreach($member->getProjects() as $project)
-                {
-                    //TODO
-                    if($project->getEndDate() != null)
-                    {
-                        $projectBeginDate = new $project->getEndDate();
-                    }
-                    
-                } 
-                $projectBeginDate->add(new \DateInterval('P1D'));
-                $project->setBeginDate($projectBeginDate);
-            }
+            //check the availibilty date of the member and define it as begin date            
             
             //add the estimation days to the endDate
-            $projectEndDate = $project->getBeginDate();
-            $projectEndDate->add(new \DateInterval('P'.$project->getEstimation().'D'));
-            $project->setEndDate(date_format($projectEndDate, "Y-m-d H:i:s"));
+            $d = new \DateTime(date('Y-m-d H:i:s'));
+            $project->setBeginDate($d);
+            $projectEndDate = new \DateTime(date('Y-m-d H:i:s'));
+            $project->setEndDate($projectEndDate);
 
     		
             $em = $this->getDoctrine()->getManager();
