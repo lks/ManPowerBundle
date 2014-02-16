@@ -79,12 +79,13 @@ class ProjectController extends Controller
     	if($form->isValid())
     	{
             //define the beginDate and the endDate
-            //check the availibilty date of the member and define it as begin date            
-            
+            //check the availibilty date of the member and define it as begin date      
+            $member = $project->getMember();
+            $project->setBeginDate($this->getAvailabilityDateMember($member, $project->getId()));
+
             //add the estimation days to the endDate
-            $d = new \DateTime(date('Y-m-d H:i:s'));
-            $project->setBeginDate($d);
-            $projectEndDate = new \DateTime(date('Y-m-d H:i:s'));
+            $projectEndDate = clone $project->getBeginDate();
+            $projectEndDate->add(new \DateInterval('P'.$project->getEstimation().'D'));
             $project->setEndDate($projectEndDate);
 
     		
@@ -100,5 +101,22 @@ class ProjectController extends Controller
             'form' => $form->createView(),
         ));
 
+    }
+
+    /**
+     * From a member object, the aim of this function is to determine the availability date
+     * of a Member in function of the different projects.
+     */
+    protected function getAvailabilityDateMember($member, $projectId)
+    {
+        $availabilityDate = new \DateTime("NOW");
+        foreach($member->getProjects() as $project)
+        {
+            if(($project->getId() != $projectId) && ($project->getEndDate() > $availabilityDate))
+            {
+                $availabilityDate = $project->getEndDate();
+            }
+        }
+        return $availabilityDate->add(new \DateInterval('P01D'));
     }
 }

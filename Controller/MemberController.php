@@ -17,8 +17,26 @@ class MemberController extends Controller
             ->getRepository('LksManPowerBundle:Member');
 
         $members = $repository->findAll();
+
+        //get the calendar
+        $period = new \DatePeriod(new \DateTime("NOW"), new \DateInterval("P1D"), 30);
+
+        //get member calendar
+        $membersCalendar = array();
+        foreach ($members as $member)
+        {
+            $tmpArray = array();
+            foreach ($period as $dt)
+            {
+                $tmpArray[$dt->format('d/m/Y')] = $this->projectAtGivenDate($member, $dt);
+            }
+            $membersCalendar[$member->getFirstname()] = $tmpArray;
+        }
+        
         return $this->render('LksManPowerBundle:Default:index.html.twig',
-        	array('members' => $members)
+        	array('members' => $members,
+                'period' => $period,
+                'membersCalendar' => $membersCalendar)
         );
     }
 
@@ -76,7 +94,6 @@ class MemberController extends Controller
 		    $em->persist($member);
 		    $em->flush();
 
-		    //TODO : Define a route
 		    return $this->redirect($this->generateUrl('lks_man_power_member_all'));
     	}
 
@@ -84,5 +101,21 @@ class MemberController extends Controller
             'form' => $form->createView(),
         ));
 
+    }
+
+    /**
+     * The aim is to know is the given member is or isn't available. 
+     * This function returns the project name.
+     */
+    protected function projectAtGivenDate($member, $date)
+    {
+        foreach($member->getProjects() as $project) 
+        {
+            if($project->getBeginDate() <= $date && $project->getEndDate() >= $date)
+            {
+                return $project->getName();
+            }
+        }
+        return null;
     }
 }

@@ -5,9 +5,26 @@
 		{{ member.firstname|e }} <a href="members/edit/{{ member.id|number_format }}">Edit</a>
 		<ul>
 			{% for project in member.projects %}
-				<li><a href="projects/edit/{{ project.id|number_format }}">{{ project.name|e }}</a></li>
+				<li><a href="projects/edit/{{ project.id|number_format }}">{{ project.name|e }}</a> Date de fin : {{ project.endDate is empty ? "TBD" : project.endDate|date("d/m/Y") }}</li>
 			{% endfor %}
 		</ul>
 	</li>
 {% endfor %}
 </ul>
+
+<table>
+	<tr>
+		<th>Member</th>
+	{% for day in period %}
+		<th>{{ day|date("d/m/Y") }}</th>
+	{% endfor %}
+	</tr>
+	{% for key, value in membersCalendar %}
+	<tr>
+		<td>{{ key }}</td>
+		{% for key2, value2 in value %}
+			<td style = "{{ value2 is empty ? "background-color: white" : "background-color: green" }}">{{ value2 is empty ? "" : value2 }}</td>
+		{% endfor %}
+	</tr>
+	{% endfor %}
+</table>
