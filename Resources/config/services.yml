@@ -1,7 +1,19 @@
 parameters:
-#    lks_man_power.example.class: Lks\ManPowerBundle\Example
+    lks_man_power_member.class: Lks\ManPowerBundle\Service\MemberService
+    lks_man_power_member_dao.class: Lks\ManPowerBundle\Dao\MemberDao
+    lks_man_power_project.class: Lks\ManPowerBundle\Service\ProjectService
+    lks_man_power_project_dao.class: Lks\ManPowerBundle\Dao\ProjectDao
 
 services:
-#    lks_man_power.example:
-#        class: %lks_man_power.example.class%
-#        arguments: [@service_id, "plain_value", %parameter%]
+    memberService:
+        class: %lks_man_power_member.class%
+        arguments: [@memberDao]
+    memberDao:
+        class: %lks_man_power_member_dao.class%
+        arguments: [@doctrine.orm.entity_manager]
+    projectService:
+        class: %lks_man_power_project.class%
+        arguments: [@projectDao]
+    projectDao:
+        class: %lks_man_power_project_dao.class%
+        arguments: [@doctrine.orm.entity_manager]

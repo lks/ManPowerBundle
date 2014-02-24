@@ -22,8 +22,14 @@
 	{% for key, value in membersCalendar %}
 	<tr>
 		<td>{{ key }}</td>
-		{% for key2, value2 in value %}
-			<td style = "{{ value2 is empty ? "background-color: white" : "background-color: green" }}">{{ value2 is empty ? "" : value2 }}</td>
+		{% for key2, value2 in value.periods %}
+			<td style = "{{ value2 is empty ? "background-color: white" : "background-color: green" }}">
+			{% if value2 is empty %}
+				<a href="members/assign/{{ value.member.id|number_format }}">Assign</a>
+			{% else %}
+				{{ value2 }}
+			{% endif %}
+			</td>
 		{% endfor %}
 	</tr>
 	{% endfor %}

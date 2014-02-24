@@ -5,8 +5,9 @@ namespace Lks\ManPowerBundle\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Lks\CapacityBundle\Entity\Member;
-use Lks\CapacityBundle\Entity\Project;
+use Lks\ManPowerBundle\Entity\Member;
+use Lks\ManPowerBundle\Entity\Project;
+use Lks\ManPowerBundle\Entity\EntityLight\MemberCalendar;
 
 class MemberController extends Controller
 {
@@ -30,10 +31,10 @@ class MemberController extends Controller
             {
                 $tmpArray[$dt->format('d/m/Y')] = $this->projectAtGivenDate($member, $dt);
             }
-            $membersCalendar[$member->getFirstname()] = $tmpArray;
+            $membersCalendar[$member->getFirstname()] = new memberCalendar($member, $tmpArray);
         }
         
-        return $this->render('LksManPowerBundle:Default:index.html.twig',
+        return $this->render('LksManPowerBundle:Member:index.html.twig',
         	array('members' => $members,
                 'period' => $period,
                 'membersCalendar' => $membersCalendar)
@@ -63,10 +64,11 @@ class MemberController extends Controller
 		    return $this->redirect($this->generateUrl('lks_man_power_member_all'));
     	}
 
-        return $this->render('LksManPowerBundle:Default:create.html.twig', array(
+        return $this->render('LksManPowerBundle:Member:create.html.twig', array(
             'form' => $form->createView(),
         ));
     }
+
 
     public function editAction(Request $request, $id)
     {
@@ -97,7 +99,50 @@ class MemberController extends Controller
 		    return $this->redirect($this->generateUrl('lks_man_power_member_all'));
     	}
 
-        return $this->render('LksManPowerBundle:Default:create.html.twig', array(
+        return $this->render('LksManPowerBundle:Member:create.html.twig', array(
+            'form' => $form->createView(),
+        ));
+
+    }
+
+    public function assignAction(Request $request, $memberId, $date) {
+    	$memberService = $this->get('memberService');
+    	$projectService = $this->get('projectService');
+
+    	$repository = $this->getDoctrine() 
+            ->getRepository('LksManPowerBundle:Member');
+
+        $member = $repository->find($memberId);
+
+        if ($member == null) {
+            throw new NotFoundHttpException('Member not found');
+        }
+
+        //get Projects without assignation
+
+        $defaultData = array('message' => 'Type your message here');
+         $form = $this->createFormBuilder($defaultData)
+    		->add('project', 'entity', array(
+    			'class' => 'LksManPowerBundle:Project',
+    			'choices' => $projectService->listUnassignProject(),
+    			'property' => 'name'))
+    		->add('save', 'submit')
+    		->getForm();
+
+    	//mamage the response of the form
+    	$form->handleRequest($request);
+
+    	if($form->isValid())
+    	{
+    		$data = $form->getData();
+
+    		$memberService->addProjectToMember($data['project'], $member, $date, 1);
+
+		    //TODO : Define a route
+		    return $this->redirect($this->generateUrl('lks_man_power_member_all'));
+    	}
+
+        return $this->render('LksManPowerBundle:Member:assign.html.twig', array(
             'form' => $form->createView(),
         ));
 

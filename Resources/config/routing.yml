@@ -8,6 +8,9 @@ lks_man_power_member_create:
 lks_man_power_member_edit:
     pattern:  /members/edit/{id}
     defaults: { _controller: LksManPowerBundle:Member:edit }
+lks_man_power_member_assign:
+    pattern:  /members/assign/{memberId}/{date}
+    defaults: { _controller: LksManPowerBundle:Member:assign }
 
 #Project routing
 lks_man_power_project_all:
