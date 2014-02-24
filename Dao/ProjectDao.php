@@ -17,6 +17,10 @@ class ProjectDao
 
     public function listUnassignProject()
     {
-    	return $this->repository->findAll();
+    	$query =  $this->repository->createQueryBuilder('p')
+    		->where('p.member is null')
+    		->getQuery();
+
+    	return $query->getResult();
     }
 }
