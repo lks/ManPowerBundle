@@ -19,8 +19,8 @@ class MemberService
 	 * @param beginDate Begin date of the project
 	 * @param duration Duration of the assignation in days
 	 */
-	public function addProjectsToMember($project, $member, $beginDate, $duration)
+	public function addProjectToMember($project, $member, $beginDate, $duration)
 	{
-
+		array_push($member->getProjects(), $project);
 	}
 }

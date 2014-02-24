@@ -29,7 +29,7 @@ class MemberController extends Controller
             $tmpArray = array();
             foreach ($period as $dt)
             {
-                $tmpArray[$dt->format('d/m/Y')] = $this->projectAtGivenDate($member, $dt);
+                $tmpArray[$dt->format('d-m-Y')] = $this->projectAtGivenDate($member, $dt);
             }
             $membersCalendar[$member->getFirstname()] = new memberCalendar($member, $tmpArray);
         }
@@ -108,6 +108,7 @@ class MemberController extends Controller
     public function assignAction(Request $request, $memberId, $date) {
     	$memberService = $this->get('memberService');
     	$projectService = $this->get('projectService');
+    	$logger = $this->get('logger');
 
     	$repository = $this->getDoctrine() 
             ->getRepository('LksManPowerBundle:Member');
@@ -135,8 +136,10 @@ class MemberController extends Controller
     	if($form->isValid())
     	{
     		$data = $form->getData();
+    		$dateTime = new \DateTime($date);
 
-    		$memberService->addProjectToMember($data['project'], $member, $date, 1);
+    		$logger->info('Date candidate: '.$dateTime->format('d/m/Y'));
+    		$memberService->addProjectToMember($data['project'], $member, $dateTime, 1);
 
 		    //TODO : Define a route
 		    return $this->redirect($this->generateUrl('lks_man_power_member_all'));
