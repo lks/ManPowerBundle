@@ -14,13 +14,15 @@ class MemberController extends Controller
 
     public function allAction()
     {
+        $dateUtility = $this->get('dateUtility');
+        
         $repository = $this->getDoctrine() 
             ->getRepository('LksManPowerBundle:Member');
 
         $members = $repository->findAll();
 
         //get the calendar
-        $period = new \DatePeriod(new \DateTime("NOW"), new \DateInterval("P1D"), 30);
+        $period = $dateUtility->getPeriod(new \DateTime("NOW"), 30, false);
 
         //get member calendar
         $membersCalendar = array();
@@ -100,52 +102,6 @@ class MemberController extends Controller
     	}
 
         return $this->render('LksManPowerBundle:Member:create.html.twig', array(
-            'form' => $form->createView(),
-        ));
-
-    }
-
-    public function assignAction(Request $request, $memberId, $date) {
-    	$memberService = $this->get('memberService');
-    	$projectService = $this->get('projectService');
-    	$logger = $this->get('logger');
-
-    	$repository = $this->getDoctrine() 
-            ->getRepository('LksManPowerBundle:Member');
-
-        $member = $repository->find($memberId);
-
-        if ($member == null) {
-            throw new NotFoundHttpException('Member not found');
-        }
-
-        //get Projects without assignation
-
-        $defaultData = array('message' => 'Type your message here');
-         $form = $this->createFormBuilder($defaultData)
-    		->add('project', 'entity', array(
-    			'class' => 'LksManPowerBundle:Project',
-    			'choices' => $projectService->listUnassignProject(),
-    			'property' => 'name'))
-    		->add('save', 'submit')
-    		->getForm();
-
-    	//mamage the response of the form
-    	$form->handleRequest($request);
-
-    	if($form->isValid())
-    	{
-    		$data = $form->getData();
-    		$dateTime = new \DateTime($date);
-
-    		$logger->info('Date candidate: '.$dateTime->format('d/m/Y'));
-    		$memberService->addProjectToMember($data['project'], $member, $dateTime, 1);
-
-		    //TODO : Define a route
-		    return $this->redirect($this->generateUrl('lks_man_power_member_all'));
-    	}
-
-        return $this->render('LksManPowerBundle:Member:assign.html.twig', array(
             'form' => $form->createView(),
         ));
 

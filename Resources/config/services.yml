@@ -3,6 +3,7 @@ parameters:
     lks_man_power_member_dao.class: Lks\ManPowerBundle\Dao\MemberDao
     lks_man_power_project.class: Lks\ManPowerBundle\Service\ProjectService
     lks_man_power_project_dao.class: Lks\ManPowerBundle\Dao\ProjectDao
+    date_utility.class: Lks\ManPowerBundle\Utility\DateUtility
 
 services:
     memberService:
@@ -11,9 +12,11 @@ services:
     memberDao:
         class: %lks_man_power_member_dao.class%
         arguments: [@doctrine.orm.entity_manager]
-    projectService:
-        class: %lks_man_power_project.class%
-        arguments: [@projectDao]
     projectDao:
         class: %lks_man_power_project_dao.class%
         arguments: [@doctrine.orm.entity_manager]
+    projectService:
+        class: %lks_man_power_project.class%
+        arguments: [@memberService, @projectDao, @logger]
+    dateUtility:
+        class: %date_utility.class%

@@ -23,4 +23,12 @@ class ProjectDao
 
     	return $query->getResult();
     }
+
+    public function save($project)
+    {
+        $this->em->persist($project);
+        $this->em->flush();
+
+        return $project;
+    }
 }
