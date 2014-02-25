@@ -27,7 +27,7 @@ class MemberService
                 $availabilityDate = $project->getEndDate();
             }
         }
-        return $availabilityDate->add(new \DateInterval('P01D'));
+        return $availabilityDate;
     }
 
     /**
