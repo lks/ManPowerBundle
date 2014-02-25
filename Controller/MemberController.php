@@ -15,11 +15,9 @@ class MemberController extends Controller
     public function allAction()
     {
         $dateUtility = $this->get('dateUtility');
+        $memberService = $this->get('memberService');
         
-        $repository = $this->getDoctrine() 
-            ->getRepository('LksManPowerBundle:Member');
-
-        $members = $repository->findAll();
+        $members = $memberService->listMembers();
 
         //get the calendar
         $period = $dateUtility->getPeriod(new \DateTime("NOW"), 30, false);
@@ -45,6 +43,8 @@ class MemberController extends Controller
 
     public function createAction(Request $request)
     {
+    	$memberService = $this->get('memberService');
+
     	$member = new Member();
 
     	$form = $this->createFormBuilder($member)
@@ -58,9 +58,7 @@ class MemberController extends Controller
 
     	if($form->isValid())
     	{
-    		$em = $this->getDoctrine()->getManager();
-		    $em->persist($member);
-		    $em->flush();
+    		$memberService->save($member);
 
 		    //TODO : Define a route
 		    return $this->redirect($this->generateUrl('lks_man_power_member_all'));
@@ -74,14 +72,10 @@ class MemberController extends Controller
 
     public function editAction(Request $request, $id)
     {
-    	$repository = $this->getDoctrine() 
-            ->getRepository('LksManPowerBundle:Member');
 
-        $member = $repository->find($id);
+        $memberService = $this->get('memberService');
 
-        if ($member == null) {
-            throw new NotFoundHttpException('Member not found');
-        }
+    	$member = $memberService->getById($id);
 
         $form = $this->createFormBuilder($member)
     		->add('firstname', 'text')
@@ -94,9 +88,7 @@ class MemberController extends Controller
 
     	if($form->isValid())
     	{
-    		$em = $this->getDoctrine()->getManager();
-		    $em->persist($member);
-		    $em->flush();
+    		$memberService->save($member);
 
 		    return $this->redirect($this->generateUrl('lks_man_power_member_all'));
     	}

@@ -15,18 +15,37 @@ class ProjectDao
         $this->repository = $this->em->getRepository('LksManPowerBundle:Project');
     }
 
+    public function listProjects($params = null)
+    {
+        $projects = null;
+        if($params == null)
+        {
+            $projects = $this->repository->findAll();
+        } else {
+            $projects = $this->repository->findBy($params);
+        }
+
+        return $projects;
+    }
+
 	/**
      * List all unassigned project
 	 *
 	 * @return ArrayCollection contained the list of unassigned project
      */
-    public function listUnassignProject()
+    public function listUnassignProjects()
     {
     	$query =  $this->repository->createQueryBuilder('p')
     		->where('p.member is null')
     		->getQuery();
 
     	return $query->getResult();
+    }
+
+    public function getById($id)
+    {
+        $project = $this->repository->find($id);
+        return $project;
     }
 
     /**

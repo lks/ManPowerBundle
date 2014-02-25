@@ -13,10 +13,10 @@ class ProjectController extends Controller
 
     public function allAction()
     {
-        $repository = $this->getDoctrine() 
-            ->getRepository('LksManPowerBundle:Project');
+        $projectService = $this->get('projectService');
 
-        $projects = $repository->findAll();
+        $projects = $projectService->listProjects();
+
         return $this->render('LksManPowerBundle:Project:index.html.twig',
         	array('projects' => $projects)
         );
@@ -24,6 +24,8 @@ class ProjectController extends Controller
 
     public function createAction(Request $request)
     {
+        $projectService = $this->get('projectService');
+
     	$project = new Project();
 
     	$form = $this->createFormBuilder($project)
@@ -42,20 +44,7 @@ class ProjectController extends Controller
 
     	if($form->isValid())
     	{
-            $member = $project->getMember();
-            if(empty($member))
-            {
-                $project->setBeginDate($this->getAvailabilityDateMember($member, $project->getId()));
-
-                //add the estimation days to the endDate
-                $projectEndDate = clone $project->getBeginDate();
-                $projectEndDate->add(new \DateInterval('P'.$project->getEstimation().'D'));
-                $project->setEndDate($projectEndDate);
-            } 
-
-    		$em = $this->getDoctrine()->getManager();
-		    $em->persist($project);
-		    $em->flush();
+            $project = $projectService->save($project);
 
 		    //TODO : Define a route
 		    return $this->redirect($this->generateUrl('lks_man_power_project_all'));
@@ -68,14 +57,9 @@ class ProjectController extends Controller
 
     public function editAction(Request $request, $id)
     {
-    	$repository = $this->getDoctrine() 
-            ->getRepository('LksManPowerBundle:Project');
+        $projectService = $this->get('projectService');
 
-        $project = $repository->find($id);
-
-        if ($project == null) {
-            throw new NotFoundHttpException('Project not found');
-        }
+        $project = $projectService->getById($id);
 
         $form = $this->createFormBuilder($project)
     		->add('name', 'text')
@@ -93,22 +77,7 @@ class ProjectController extends Controller
 
     	if($form->isValid())
     	{
-            //define the beginDate and the endDate
-            //check the availibilty date of the member and define it as begin date
-            $member = $project->getMember();
-            if(!empty($member))
-            {
-                $member = $project->getMember();
-                $project->setBeginDate($this->getAvailabilityDateMember($member, $project->getId()));
-
-                //add the estimation days to the endDate
-                $projectEndDate = clone $project->getBeginDate();
-                $projectEndDate->add(new \DateInterval('P'.$project->getEstimation().'D'));
-                $project->setEndDate($projectEndDate);
-            }  
-            $em = $this->getDoctrine()->getManager();
-		    $em->persist($project);
-		    $em->flush();
+            $project = $projectService->save($project);
 
 		    //TODO : Define a route
 		    return $this->redirect($this->generateUrl('lks_man_power_project_all'));
@@ -121,18 +90,16 @@ class ProjectController extends Controller
     }
 
     public function assignAction(Request $request, $memberId, $date) {
+
         $memberService = $this->get('memberService');
         $projectService = $this->get('projectService');
+
         $logger = $this->get('logger');
 
         $repository = $this->getDoctrine() 
             ->getRepository('LksManPowerBundle:Member');
 
-        $member = $repository->find($memberId);
-
-        if ($member == null) {
-            throw new NotFoundHttpException('Member not found');
-        }
+        $member = $memberService->getById($memberId);
 
         //get Projects without assignation
 
@@ -140,7 +107,7 @@ class ProjectController extends Controller
          $form = $this->createFormBuilder($defaultData)
             ->add('project', 'entity', array(
                 'class' => 'LksManPowerBundle:Project',
-                'choices' => $projectService->listUnassignProject(),
+                'choices' => $projectService->listUnassignProjects(),
                 'empty_value' => 'Choisissez une option',
                 'property' => 'name'))
             ->add('save', 'submit')
@@ -152,9 +119,10 @@ class ProjectController extends Controller
         if($form->isValid())
         {
             $data = $form->getData();
-            $dateTime = new \DateTime($date);
-
-            $project = $projectService->assignMemberToProject($data['project'], $member, $dateTime, 1);
+            $project = $data['project'];
+            $project->setBeginDate(new \DateTime($date));
+            $project->setMember($member);
+            $project = $projectService->save($project);
 
             //TODO : Define a route
             return $this->redirect($this->generateUrl('lks_man_power_member_all'));

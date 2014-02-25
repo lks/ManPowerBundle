@@ -28,9 +28,17 @@ class MemberDao
         return $members;
 	}
 
-	public function getMember($id)
+	public function getById($id)
 	{
 		$member = $this->repository->find($id);
         return $member;
+	}
+
+	public function save($member)
+	{
+		$this->em = $this->getDoctrine()->getManager();
+		$this->em->persist($member);
+		$this->em->flush();
+		return $member;
 	}
 }
