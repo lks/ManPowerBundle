@@ -15,6 +15,11 @@ class ProjectDao
         $this->repository = $this->em->getRepository('LksManPowerBundle:Project');
     }
 
+	/**
+     * List all unassigned project
+	 *
+	 * @return ArrayCollection contained the list of unassigned project
+     */
     public function listUnassignProject()
     {
     	$query =  $this->repository->createQueryBuilder('p')
@@ -24,11 +29,17 @@ class ProjectDao
     	return $query->getResult();
     }
 
+    /**
+     * Save an project item
+     *
+	 * @param project Project object to save
+	 *
+	 * @return Project Object saved
+     */
     public function save($project)
     {
         $this->em->persist($project);
         $this->em->flush();
-
         return $project;
     }
 }

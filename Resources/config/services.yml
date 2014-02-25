@@ -15,8 +15,9 @@ services:
     projectDao:
         class: %lks_man_power_project_dao.class%
         arguments: [@doctrine.orm.entity_manager]
-    projectService:
-        class: %lks_man_power_project.class%
-        arguments: [@memberService, @projectDao, @logger]
     dateUtility:
         class: %date_utility.class%
+    projectService:
+        class: %lks_man_power_project.class%
+        arguments: [@memberService, @projectDao, @dateUtility, @logger]
+    

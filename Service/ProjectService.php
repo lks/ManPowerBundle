@@ -6,12 +6,14 @@ class ProjectService
 {
 	protected $memberService;
 	protected $projectDao;
+	protected $dateUtility;
 	protected $logger;
 
-	public function __construct($memberService, $projectDao, $logger)
+	public function __construct($memberService, $projectDao, $dateUtility, $logger)
     {
     	$this->memberService = $memberService;
         $this->projectDao = $projectDao;
+        $this->dateUtility = $dateUtility;
         $this->logger = $logger;
 	}
 
@@ -30,16 +32,11 @@ class ProjectService
 	 */
 	public function assignMemberToProject($project, $member, $beginDate, $duration)
 	{
-		$this->logger->info('Project: '.$project->getId().'; Member: '.$member->getFirstname().'; BeginDate: '.$beginDate->format('d/m/Y').'; Duration: '.$duration);
-        $project->setMember($member);
+		$project->setMember($member);
         $project->setBeginDate($this->memberService->getAvailabilityDateMember($member, $project->getId()));
 
         //add the estimation days to the endDate
-        $projectEndDate = clone $project->getBeginDate();
-        $projectEndDate->add(new \DateInterval('P'.$duration.'D'));
-        $project->setEndDate($projectEndDate);
-        $project = $this->projectDao->save($project);
-
-        return $project;
+        $project->setEndDate($$this->dateUtility->getEndDate($project->getBeginDate(), $duration, $false));
+        return $this->projectDao->save($project);
 	}
 }
