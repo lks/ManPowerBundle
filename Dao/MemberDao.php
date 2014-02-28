@@ -36,7 +36,6 @@ class MemberDao
 
 	public function save($member)
 	{
-		$this->em = $this->getDoctrine()->getManager();
 		$this->em->persist($member);
 		$this->em->flush();
 		return $member;
