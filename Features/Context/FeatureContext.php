@@ -60,4 +60,21 @@ class FeatureContext extends MinkContext  //MinkContext if you want to test web
 //        $container->get('some_service')->doSomethingWith($argument);
 //    }
 //
+
+    /**
+     * @Then  /^I should have an error message$/
+     */
+    public function iShouldHaveAnErrorMessage()
+    {
+        throw new PendingException();
+    }
+
+    /**
+     * @Given  /^It exist a member with the firstname and lastname : "([^"]*)" and "([^"]*)"$/
+     */
+    public function itExistAMemberWithTheFirstnameAndLastnameAnd($arg1, $arg2)
+    {
+        throw new PendingException();
+    }
+
 }
